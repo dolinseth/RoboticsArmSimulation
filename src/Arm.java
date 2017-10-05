@@ -2,8 +2,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Arm {
-	public float vertMoveSpeed;
-	public float horizMoveSpeed;
+	public float vertMoveSpeed; //the speed at which the arm should move vertically, in units per second
 	
 	public final double CONV = (Math.PI / 180.0); //the conversion factor to go from degrees to radians
 	
@@ -32,25 +31,36 @@ public class Arm {
 	}
 	
 	public static void main(String[] arg){
+		//declaring the decimal format object for normalizing the formatting of printed statements
 		DecimalFormat df = new DecimalFormat("#.000000");
+		//declaring the arm object to to be simulated
 		Arm arm = new Arm(10, 5, 30, 60, 1.0);
+		//declares the scaanner for allowing the user to control the pacing of the iteration
 		Scanner scan = new Scanner(System.in);
-		
-		System.out.println("Press enter to continue. Type \"q\" to quit");
+				
+		//declaring variables to calculate the change in coordinates every 
+		//tick to make sure it's changing by the right amount
 		float deltaX = (float)0.0;
 		float deltaY = (float)0.0;
 		float oldX = arm.x2;
 		float oldY = arm.y2;
 		
+		//loop to allow the user to iterate the simulation with each press of the enter key
+		System.out.println("Press enter to continue. Type \"q\" to quit");
 		while (scan.nextLine() != "q"){
+			//updating  the variables for change in coordinates
 			deltaX = arm.x2 - oldX;
 			deltaY = arm.y2 - oldY;
 			oldX = arm.x2;
 			oldY = arm.y2;
 			
+			//verifying that the langth of each piece of the arm is not 
+			//changing because that has been a problem
 			float lengthVerif1 = CalcDistance((float)0.0, (float)0.0, arm.x1, arm.y1);
 			float lengthVerif2 = CalcDistance(arm.x1, arm.y1, arm.x2, arm.y2);
-			
+		
+			//calculating the spin rates, integrating the position, 
+			//and printing the position and change in position each tick
 			arm.CalcSpinRates();
 			System.out.println(df.format(arm.x1) + "\t" + df.format(arm.y1) + "\t" + df.format(arm.x2) + "\t" + df.format(arm.y2) + "\t" + df.format(deltaX) + "\t" + df.format(deltaY));
 			System.out.println(df.format(lengthVerif1) + "\t" + df.format(lengthVerif2));
