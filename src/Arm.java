@@ -64,7 +64,7 @@ public class Arm {
 			arm.CalcSpinRates();
 			System.out.println(df.format(arm.x1) + "\t" + df.format(arm.y1) + "\t" + df.format(arm.x2) + "\t" + df.format(arm.y2) + "\t" + df.format(deltaX) + "\t" + df.format(deltaY));
 			System.out.println(df.format(lengthVerif1) + "\t" + df.format(lengthVerif2));
-			arm.IteratePos(0.1);
+			arm.IteratePos(0.01);
 		}
 		
 		scan.close();
@@ -95,10 +95,11 @@ public class Arm {
 	
 	public void CalcCoords(){
 		//calculates the coordinates of each point given
+		ang3 = (180 - ang2 - ang1);
 		x1 = (float)Math.cos(ang1 * CONV) * length1;
 		y1 = (float)Math.sin(ang1 * CONV) * length1;
-		x2 = (float)(x1 + Math.cos(ang2 * CONV) * length2);
-		y2 = (float)(y1 + Math.sin(ang2 * CONV) * length2);		
+		x2 = (float)(x1 + Math.cos(ang3 * CONV) * length2);
+		y2 = (float)(y1 + Math.sin(ang3 * CONV) * length2);		
 	}
 	
 	public static float CalcDistance(float x1, float y1, float x2, float y2){
