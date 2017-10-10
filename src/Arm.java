@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Arm {
 	public float vertMoveSpeed; //the speed at which the arm should move vertically, in units per second
+	public float horizMoveSpeed; //the speed at which the arm should move horizontall, in units per second
 	
 	public final double CONV = (Math.PI / 180.0); //the conversion factor to go from degrees to radians
 	
@@ -20,21 +21,30 @@ public class Arm {
 	public float x2; //x location of hand
 	public float y2; //y location of hand
 	
-	public Arm(double UpperArmLength, double LowerArmLength, double UpperArmAngle, double JointAngle, double VerticalMovementSpeed){
+	public Arm(double UpperArmLength, double LowerArmLength, double UpperArmAngle, double JointAngle){
 		this.ang1 = (float)UpperArmAngle;
 		this.ang2 = (float)JointAngle;
 		this.ang3 = (float)(180 - ang1 - ang2);
 		this.length1 = (float)UpperArmLength;
 		this.length2 = (float)LowerArmLength;
-		this.vertMoveSpeed = (float)VerticalMovementSpeed;
 		CalcCoords();
+	}
+	
+	public void SetHorizMoveSpeed(double HorizMoveSpeed){
+		this.horizMoveSpeed = (float)HorizMoveSpeed;
+	}
+	
+	public void SetVertMoveSpeed(double VertMoveSpeed){
+		this.vertMoveSpeed = (float)VertMoveSpeed;
 	}
 	
 	public static void main(String[] arg){
 		//declaring the decimal format object for normalizing the formatting of printed statements
 		DecimalFormat df = new DecimalFormat("#.000000");
 		//declaring the arm object to to be simulated
-		Arm arm = new Arm(10, 5, 30, 60, 1.0);
+		Arm arm = new Arm(10, 5, 30, 60);
+		arm.SetVertMoveSpeed(1.0);
+		arm.SetHorizMoveSpeed(1.0);
 		//declares the scaanner for allowing the user to control the pacing of the iteration
 		Scanner scan = new Scanner(System.in);
 				
@@ -61,7 +71,7 @@ public class Arm {
 		
 			//calculating the spin rates, integrating the position, 
 			//and printing the position and change in position each tick
-			arm.CalcSpinRates();
+			arm.CalcHorizSpinRates();
 			System.out.println(df.format(arm.x1) + "\t" + df.format(arm.y1) + "\t" + df.format(arm.x2) + "\t" + df.format(arm.y2) + "\t" + df.format(deltaX) + "\t" + df.format(deltaY));
 			System.out.println(df.format(lengthVerif1) + "\t" + df.format(lengthVerif2));
 			arm.IteratePos(0.01);
@@ -70,12 +80,10 @@ public class Arm {
 		scan.close();
 	}
 	
-	public void CalcSpinRates(){
-		//calculates the derivatives of the angle so that the function can be
+	public void CalcVertSpinRates(){
+		//calculates the derivatives of the angles so that the function can be
 		//integrated each tick
-		
-		//the conversion from written math to typed math is correct
-		//so why the fuck doesn't it work?
+		//for vertical movement
 		dAng1 = (float)(vertMoveSpeed / 
 				(length1 * cos(ang1) + length2 * cos(ang3)
 						+ ((length2 * sin(ang3) - length1 * sin(ang1))
@@ -84,6 +92,20 @@ public class Arm {
 		dAng2 = (float)(dAng1
 				* ( (length2 * sin(ang3) - length1 * sin(ang1))
 						/ (length2 * sin(ang3)) ));
+	}
+	
+	public void CalcHorizSpinRates(){
+		//calculates the derivatives of the angles so that the function can be
+		//integrated each tick
+		//for horizontal movement
+		dAng1 = (float)(horizMoveSpeed / 
+				( (length2 * sin(ang3) - length1 * sin(ang1))
+						+ (tan(ang3) * 
+								(length1 * cos(ang1) + length2 * cos(ang3)))));
+		
+		dAng2 = (float)(dAng1 * 
+				((length1 * cos(ang1) + length2 * cos(ang3))) /
+					(length2 * cos(ang3)));
 	}
 	
 	public void IteratePos(double Time){
